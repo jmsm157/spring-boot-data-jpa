@@ -106,4 +106,5 @@ public class FacturaXlsxView extends AbstractXlsxView {
 		cell.setCellStyle(tbodyStyle);
 		
 	}
+	
 }
