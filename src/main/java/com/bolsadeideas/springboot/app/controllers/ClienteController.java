@@ -56,11 +56,11 @@ public class ClienteController {
 
 	@Autowired
 	private IUploadFileService uploadFileService;
-	
+
 	@Autowired
 	private MessageSource messageSource;
 
-	@Secured({"ROLE_USER"})
+	@Secured({ "ROLE_USER" })
 	@GetMapping(value = "/uploads/{filename:.+}")
 	public ResponseEntity<Resource> verFoto(@PathVariable String filename) {
 
@@ -96,7 +96,8 @@ public class ClienteController {
 
 	@RequestMapping(value = { "/listar", "/" }, method = RequestMethod.GET)
 	public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model,
-			Authentication authentication, HttpServletRequest request, Locale locale) {
+			@RequestParam(name = "format", defaultValue = "html") String format, Authentication authentication,
+			HttpServletRequest request, Locale locale) {
 
 		if (authentication != null) {
 			logger.info("Hola usuario autenticado, tu username es: ".concat(authentication.getName()));
@@ -115,21 +116,37 @@ public class ClienteController {
 		} else {
 			logger.info("Hola ".concat(auth.getName()).concat(" NO tienes acceso!"));
 		}
-		
-		SecurityContextHolderAwareRequestWrapper securityContext = new SecurityContextHolderAwareRequestWrapper(request,"");
+
+		SecurityContextHolderAwareRequestWrapper securityContext = new SecurityContextHolderAwareRequestWrapper(request,
+				"");
 
 		if (securityContext.isUserInRole("ROLE_ADMIN")) {
-			logger.info("Forma usando SecurityContextHolderAwareRequestWrapper: Hola ".concat(auth.getName()).concat(" tienes acceso!"));
+			logger.info("Forma usando SecurityContextHolderAwareRequestWrapper: Hola ".concat(auth.getName())
+					.concat(" tienes acceso!"));
 		} else {
-			logger.info("Forma usando SecurityContextHolderAwareRequestWrapper: Hola ".concat(auth.getName()).concat(" NO tienes acceso!"));
+			logger.info("Forma usando SecurityContextHolderAwareRequestWrapper: Hola ".concat(auth.getName())
+					.concat(" NO tienes acceso!"));
 		}
-		
+
 		if (request.isUserInRole("ROLE_ADMIN")) {
 			logger.info("Forma usando HttpServletRequest: Hola ".concat(auth.getName()).concat(" tienes acceso!"));
 		} else {
 			logger.info("Forma usando HttpServletRequest: Hola ".concat(auth.getName()).concat(" NO tienes acceso!"));
 		}
-		
+
+		if (format.equals("html")) {
+			Pageable pageRequest = PageRequest.of(page, 4);
+
+			Page<Cliente> clientes = clienteService.findAll(pageRequest);
+
+			PageRender<Cliente> pageRender = new PageRender<Cliente>("/listar", clientes);
+			model.addAttribute("clientes", clientes);
+			model.addAttribute("page", pageRender);
+		} else {
+			model.addAttribute("clientes", clienteService.findAll());
+			return "listar";
+		}
+
 		Pageable pageRequest = PageRequest.of(page, 5);
 		Page<Cliente> clientes = clienteService.findAll(pageRequest);
 		PageRender<Cliente> pageRender = new PageRender<>("/listar", clientes);
@@ -168,6 +185,7 @@ public class ClienteController {
 		model.put("titulo", "Editar Cliente");
 		return "form";
 	}
+
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/form", method = RequestMethod.POST)
 	public String guardar(@Valid Cliente cliente, BindingResult result, @RequestParam("file") MultipartFile foto,
@@ -202,7 +220,7 @@ public class ClienteController {
 		flash.addFlashAttribute("success", mesajeFlash);
 		return "redirect:listar";
 	}
-	
+
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(value = "/eliminar/{id}")
 	public String eliminar(@PathVariable(value = "id") Long id, RedirectAttributes flash) {
@@ -235,7 +253,7 @@ public class ClienteController {
 		}
 
 		Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
-		
+
 		return authorities.contains(new SimpleGrantedAuthority(role));
 
 //		for (GrantedAuthority authority : authorities) {
