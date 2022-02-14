@@ -12,6 +12,7 @@
 					<a sec:authorize="hasRole('ROLE_ADMIN')" class="btn btn-success btn-xs" th:href="@{/form}">crear
 						cliente</a>
 					<a class="btn btn-success btn-xs float-right" th:href="@{'/listar'(format=csv)}">CSV</a>
+					<a class="btn btn-outline-success btn-xs float-right mx-1" th:href="@{'/listar'(format=xml)}">XML</a>
 				</p>
 				<table class="table table-striped">
 					<thead>

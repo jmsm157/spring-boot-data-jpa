@@ -133,23 +133,24 @@ public class ClienteController {
 		} else {
 			logger.info("Forma usando HttpServletRequest: Hola ".concat(auth.getName()).concat(" NO tienes acceso!"));
 		}
+//
+//		if (format.equals("html")) {
+//			Pageable pageRequest = PageRequest.of(page, 5);
+//			Page<Cliente> clientes = clienteService.findAll(pageRequest);
+//			PageRender<Cliente> pageRender = new PageRender<>("/listar", clientes);
+//			model.addAttribute("titulo", messageSource.getMessage("text.cliente.listar.titulo", null, locale));
+//			model.addAttribute("clientes", clientes);
+//			model.addAttribute("page", pageRender);
+//			return "listar";
+//		} else {
+//			model.addAttribute("clientes", clienteService.findAll());
+//			return "listar";
+//		}
+		Pageable pageRequest = PageRequest.of(page, 4);
 
-		if (format.equals("html")) {
-			Pageable pageRequest = PageRequest.of(page, 4);
-
-			Page<Cliente> clientes = clienteService.findAll(pageRequest);
-
-			PageRender<Cliente> pageRender = new PageRender<Cliente>("/listar", clientes);
-			model.addAttribute("clientes", clientes);
-			model.addAttribute("page", pageRender);
-		} else {
-			model.addAttribute("clientes", clienteService.findAll());
-			return "listar";
-		}
-
-		Pageable pageRequest = PageRequest.of(page, 5);
 		Page<Cliente> clientes = clienteService.findAll(pageRequest);
-		PageRender<Cliente> pageRender = new PageRender<>("/listar", clientes);
+
+		PageRender<Cliente> pageRender = new PageRender<Cliente>("/listar", clientes);
 		model.addAttribute("titulo", messageSource.getMessage("text.cliente.listar.titulo", null, locale));
 		model.addAttribute("clientes", clientes);
 		model.addAttribute("page", pageRender);
