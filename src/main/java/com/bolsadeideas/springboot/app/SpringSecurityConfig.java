@@ -18,47 +18,38 @@ import com.bolsadeideas.springboot.app.service.JpaUserDetailsService;
 
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @Configuration
-public class SpringSecurityConfig extends WebSecurityConfigurerAdapter{
-	
+public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
+
 	@Autowired
 	private LoginSuccessHandler successHandler;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private JpaUserDetailsService userDetailsService;
-	
+
 	@Autowired
 //	private DataSource dataSource;
-	
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/","/css/**", "/js/**", "/images/**", "/listar", "/locale").permitAll()
+		http.authorizeRequests()
+				.antMatchers("/", "/css/**", "/js/**", "/images/**", "/listar**", "/locale", "/api/clientes/**")
+				.permitAll()
 //		.antMatchers("/ver/**").hasAnyRole("USER")
 //		.antMatchers("/uploads/**").hasAnyRole("USER")
 //		.antMatchers("/form/**").hasAnyRole("ADMIN")
 //		.antMatchers("/eliminar/**").hasAnyRole("ADMIN")
 //		.antMatchers("/factura/**").hasAnyRole("ADMIN")
-		.anyRequest().authenticated()
-		.and()
-			.formLogin()
-				.successHandler(successHandler)
-				.loginPage("/login")
-			.permitAll()
-		.and()
-			.logout().permitAll()
-		.and()
-			.exceptionHandling().accessDeniedPage("/error_403");
+				.anyRequest().authenticated().and().formLogin().successHandler(successHandler).loginPage("/login")
+				.permitAll().and().logout().permitAll().and().exceptionHandling().accessDeniedPage("/error_403");
 	}
 
-
-
 	@Autowired
-	public void configurerGlobal(AuthenticationManagerBuilder build) throws Exception{
-		build.userDetailsService(userDetailsService)
-		.passwordEncoder(passwordEncoder);
-		
+	public void configurerGlobal(AuthenticationManagerBuilder build) throws Exception {
+		build.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+
 //		build.jdbcAuthentication()
 //		.dataSource(dataSource)
 //		.passwordEncoder(passwordEncoder)
